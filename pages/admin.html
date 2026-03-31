@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — SakayKo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <a href="../index.html" class="admin-logo">SakayKo<span class="dot">.</span></a>
+      <a href="admin.html" class="sidebar-link active">👥 Users</a>
+      <a href="admin-rides.html" class="sidebar-link">🚗 Rides</a>
+      <a href="map.html" class="sidebar-link">🗺️ Live map</a>
+      <div style="flex:1"></div>
+      <a href="#" onclick="signOut()" class="sidebar-link" style="margin-top:auto">🚪 Sign out</a>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <div>
+          <h1>User management</h1>
+          <p style="font-size:0.875rem;color:rgba(255,255,255,0.4);margin-top:4px">
+            Approve or reject new account registrations
+          </p>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center">
+          <span id="admin-name" style="font-size:0.875rem;color:rgba(255,255,255,0.5)"></span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div id="stats-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
+        <div class="table-wrap" style="padding:1.25rem">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Pending</div>
+          <div id="stat-pending" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#F97316">—</div>
+        </div>
+        <div class="table-wrap" style="padding:1.25rem">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Approved</div>
+          <div id="stat-approved" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#4ADE80">—</div>
+        </div>
+        <div class="table-wrap" style="padding:1.25rem">
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Total users</div>
+          <div id="stat-total" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:700">—</div>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:1rem">
+        <button class="action-btn" id="filter-all" onclick="setFilter('all')" style="padding:6px 16px;background:rgba(255,255,255,0.1);color:white">All</button>
+        <button class="action-btn" id="filter-pending" onclick="setFilter('pending')" style="padding:6px 16px">⏳ Pending</button>
+        <button class="action-btn" id="filter-approved" onclick="setFilter('approved')" style="padding:6px 16px">✅ Approved</button>
+        <button class="action-btn" id="filter-rejected" onclick="setFilter('rejected')" style="padding:6px 16px">❌ Rejected</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Registered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table">
+            <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.3);padding:2rem">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../js/supabase.js"></script>
+  <script>
+    let allUsers = [];
+    let currentFilter = 'all';
+
+    (async () => {
+      const result = await requireAdmin();
+      if (!result) return;
+      document.getElementById('admin-name').textContent = result.profile.first_name + ' (Admin)';
+      await loadUsers();
+
+      // Real-time updates
+      supabase
+        .channel('admin-profiles')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, loadUsers)
+        .subscribe();
+    })();
+
+    async function loadUsers() {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) { console.error(error); return; }
+      allUsers = data || [];
+      updateStats();
+      renderTable();
+    }
+
+    function updateStats() {
+      document.getElementById('stat-pending').textContent = allUsers.filter(u => u.status === 'pending').length;
+      document.getElementById('stat-approved').textContent = allUsers.filter(u => u.status === 'approved').length;
+      document.getElementById('stat-total').textContent = allUsers.length;
+    }
+
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.color = 'rgba(255,255,255,0.5)';
+      });
+      document.getElementById('filter-' + f).style.background = 'rgba(255,255,255,0.1)';
+      document.getElementById('filter-' + f).style.color = 'white';
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('users-table');
+      const filtered = currentFilter === 'all'
+        ? allUsers
+        : allUsers.filter(u => u.status === currentFilter);
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.3);padding:2rem">No ${currentFilter === 'all' ? '' : currentFilter} users found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => `
+        <tr>
+          <td style="font-weight:500;color:white">${u.first_name} ${u.last_name}</td>
+          <td>${u.email}</td>
+          <td>${u.phone || '—'}</td>
+          <td><span style="text-transform:capitalize">${u.role}</span></td>
+          <td>
+            <span class="badge badge-${u.status}">${u.status}</span>
+          </td>
+          <td style="color:rgba(255,255,255,0.4)">${new Date(u.created_at).toLocaleDateString('en-PH', {month:'short',day:'numeric',year:'numeric'})}</td>
+          <td>
+            ${u.status === 'pending' ? `
+              <button class="action-btn action-approve" onclick="updateStatus('${u.id}','approved')">Approve</button>
+              <button class="action-btn action-reject" onclick="updateStatus('${u.id}','rejected')">Reject</button>
+            ` : u.status === 'approved' ? `
+              <button class="action-btn action-reject" onclick="updateStatus('${u.id}','rejected')">Suspend</button>
+            ` : `
+              <button class="action-btn action-approve" onclick="updateStatus('${u.id}','approved')">Restore</button>
+            `}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function updateStatus(userId, newStatus) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+
+      if (error) {
+        alert('Error updating status: ' + error.message);
+        return;
+      }
+      // Table will auto-update via real-time subscription
+    }
+  </script>
+
+</body>
+</html>

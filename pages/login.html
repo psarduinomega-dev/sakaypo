@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — SakayKo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <a href="../index.html" class="auth-logo">SakayKo<span class="dot">.</span></a>
+
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-sub">Sign in to see your driver's live location.</p>
+
+    <div class="alert alert-error" id="error-msg"></div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" class="form-input" id="email" placeholder="juan@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="password" placeholder="Your password" required>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submit-btn">Sign in</button>
+    </form>
+
+    <div class="auth-footer" style="margin-top: 1rem;">
+      Don't have an account? <a href="register.html">Create one</a>
+    </div>
+  </div>
+
+  <script src="../js/supabase.js"></script>
+  <script>
+    const form = document.getElementById('login-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    // If already logged in, redirect
+    (async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        const profile = await getProfile(user.id);
+        if (profile?.role === 'admin') window.location.href = 'admin.html';
+        else if (profile?.status === 'approved') window.location.href = 'map.html';
+        else window.location.href = 'pending.html';
+      }
+    })();
+
+    function setLoading(loading) {
+      submitBtn.disabled = loading;
+      submitBtn.innerHTML = loading
+        ? '<span class="spinner"></span>Signing in...'
+        : 'Sign in';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.classList.remove('show');
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      setLoading(true);
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        const profile = await getProfile(data.user.id);
+        if (!profile) throw new Error('Account not found. Please register first.');
+
+        if (profile.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else if (profile.status === 'approved') {
+          window.location.href = 'map.html';
+        } else if (profile.status === 'pending') {
+          window.location.href = 'pending.html';
+        } else {
+          throw new Error('Your account has been rejected. Please contact support.');
+        }
+
+      } catch (err) {
+        errorMsg.textContent = err.message || 'Invalid email or password.';
+        errorMsg.classList.add('show');
+        setLoading(false);
+      }
+    });
+  </script>
+
+</body>
+</html>

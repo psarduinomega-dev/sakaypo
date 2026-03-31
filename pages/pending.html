@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waiting for approval — SakayKo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <a href="../index.html" class="auth-logo">SakayKo<span class="dot">.</span></a>
+
+    <span class="pending-icon">⏳</span>
+    <h2 class="pending-title">Account under review</h2>
+    <p class="pending-text" id="pending-text">
+      Hi there! Your account is being reviewed by our admin.<br>
+      You'll receive an email once it's approved — usually within 24 hours.
+    </p>
+
+    <div class="pending-steps">
+      <div class="pending-step">
+        <div class="step-icon-sm step-done">✅</div>
+        <span>Account registered successfully</span>
+      </div>
+      <div class="pending-step">
+        <div class="step-icon-sm step-current">🔍</div>
+        <span>Admin review in progress...</span>
+      </div>
+      <div class="pending-step">
+        <div class="step-icon-sm step-next">🗺️</div>
+        <span>Access to live map unlocked</span>
+      </div>
+    </div>
+
+    <button onclick="checkStatus()" class="btn-submit" id="check-btn">Check my status</button>
+
+    <div class="auth-footer" style="margin-top: 1.25rem;">
+      Not you? <a href="#" onclick="handleSignOut()">Sign out</a>
+    </div>
+  </div>
+
+  <script src="../js/supabase.js"></script>
+  <script>
+    let currentUser = null;
+
+    (async () => {
+      currentUser = await getCurrentUser();
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const profile = await getProfile(currentUser.id);
+      if (!profile) { window.location.href = 'login.html'; return; }
+
+      // Update greeting
+      document.getElementById('pending-text').innerHTML =
+        `Hi <strong>${profile.first_name}</strong>! Your account is being reviewed by our admin.<br>
+         You'll receive an email once it's approved — usually within 24 hours.`;
+
+      // If already approved, redirect immediately
+      if (profile.status === 'approved') {
+        window.location.href = 'map.html';
+        return;
+      }
+
+      // Listen for real-time status changes
+      supabase
+        .channel('profile-status')
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${currentUser.id}`
+        }, (payload) => {
+          if (payload.new.status === 'approved') {
+            window.location.href = 'map.html';
+          } else if (payload.new.status === 'rejected') {
+            window.location.href = 'rejected.html';
+          }
+        })
+        .subscribe();
+    })();
+
+    async function checkStatus() {
+      const btn = document.getElementById('check-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Checking...';
+
+      const profile = await getProfile(currentUser.id);
+      if (profile?.status === 'approved') {
+        window.location.href = 'map.html';
+      } else if (profile?.status === 'rejected') {
+        window.location.href = 'rejected.html';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Still pending — check again later';
+        setTimeout(() => { btn.textContent = 'Check my status'; }, 3000);
+      }
+    }
+
+    async function handleSignOut() {
+      await signOut();
+    }
+  </script>
+
+</body>
+</html>

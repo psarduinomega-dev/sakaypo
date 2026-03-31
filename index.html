@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SakayKo — Carpool Made Local</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">SakayPo<span class="dot">.</span></a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="pages/login.html" class="btn-ghost">Sign in</a>
+      <a href="pages/register.html" class="btn-primary">Join now</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">🇵🇭 Carpool platform for Filipinos</div>
+    <h1 class="hero-title">
+      Your <em>daily ride,</em><br>shared smarter.
+    </h1>
+    <p class="hero-sub">
+      See your driver's live location, drop a pin where you are,<br>
+      and get picked up — no guessing, no waiting in the dark.
+    </p>
+    <div class="hero-cta">
+      <a href="pages/register.html" class="btn-primary btn-lg">Create free account</a>
+      <a href="#how" class="btn-outline btn-lg">See how it works</a>
+    </div>
+    <div class="hero-visual">
+      <div class="map-mockup">
+        <div class="map-bg"></div>
+        <div class="map-road map-road-h"></div>
+        <div class="map-road map-road-v"></div>
+        <div class="map-road map-road-diag"></div>
+        <div class="pulse-ring"></div>
+        <div class="driver-pin">
+          <svg width="32" height="40" viewBox="0 0 32 40"><path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 24 16 24S32 28 32 16C32 7.163 24.837 0 16 0z" fill="#F97316"/><circle cx="16" cy="16" r="7" fill="white"/></svg>
+          <div class="pin-label">Your driver</div>
+        </div>
+        <div class="passenger-pin passenger-pin-1">
+          <svg width="22" height="28" viewBox="0 0 32 40"><path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 24 16 24S32 28 32 16C32 7.163 24.837 0 16 0z" fill="#3B82F6"/><circle cx="16" cy="16" r="7" fill="white"/></svg>
+        </div>
+        <div class="passenger-pin passenger-pin-2">
+          <svg width="22" height="28" viewBox="0 0 32 40"><path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 24 16 24S32 28 32 16C32 7.163 24.837 0 16 0z" fill="#3B82F6"/><circle cx="16" cy="16" r="7" fill="white"/></svg>
+        </div>
+        <div class="status-card">
+          <div class="status-dot online"></div>
+          <span>Driver is online · 2 waiting</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="how-label">How it works</div>
+    <h2 class="how-title">Three steps to your ride</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">📋</div>
+        <h3>Register & get approved</h3>
+        <p>Create an account. Our admin reviews and approves it so only trusted riders join the community.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">📍</div>
+        <h3>Drop your pin</h3>
+        <p>See the driver's live location on the map, then pin where you are or tap "use my location."</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">🚗</div>
+        <h3>Get picked up</h3>
+        <p>The driver sees your pin and accepts your request. You get a real-time status update — no more guessing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section class="roles">
+    <div class="role-card role-passenger">
+      <div class="role-icon">🧍</div>
+      <h3>For passengers</h3>
+      <ul>
+        <li>Watch driver move live on map</li>
+        <li>Drop your pickup pin anywhere</li>
+        <li>Real-time status: waiting → accepted → on the way</li>
+        <li>Cancel anytime, no drama</li>
+      </ul>
+      <a href="pages/register.html" class="btn-primary">Join as passenger</a>
+    </div>
+    <div class="role-card role-driver">
+      <div class="role-icon">🚘</div>
+      <h3>For drivers</h3>
+      <ul>
+        <li>Go online in one tap</li>
+        <li>See all waiting passengers on your map</li>
+        <li>Accept or skip requests</li>
+        <li>Your route, your schedule</li>
+      </ul>
+      <a href="pages/register.html" class="btn-outline-light">Apply as driver</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">SakayKo<span class="dot">.</span></div>
+    <p>A local carpool platform built for Filipino commuters.</p>
+    <div class="footer-links">
+      <a href="pages/login.html">Sign in</a>
+      <a href="pages/register.html">Register</a>
+    </div>
+    <div class="footer-copy">© 2026 SakayKo. All rights reserved.</div>
+  </footer>
+
+</body>
+</html>
