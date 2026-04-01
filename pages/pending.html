@@ -12,7 +12,7 @@
 <body class="auth-page">
 
   <div class="auth-card">
-    <a href="../index.html" class="auth-logo">SakayPo</a>
+    <a href="../index.html" class="auth-logo">SakayPo<span class="dot">.</span></a>
 
     <span class="pending-icon">⏳</span>
     <h2 class="pending-title">Account under review</h2>
@@ -38,7 +38,7 @@
 
     <button onclick="checkStatus()" class="btn-submit" id="check-btn">Check my status</button>
 
-    <div class="auth-footer" style="margin-top: 1.25rem;">
+    <div class="auth-footer" style="margin-top:1.25rem">
       Not you? <a href="#" onclick="handleSignOut()">Sign out</a>
     </div>
   </div>
@@ -50,39 +50,28 @@
 
     (async () => {
       currentUser = await getCurrentUser();
-      if (!currentUser) {
-        window.location.href = 'login.html';
-        return;
-      }
+      if (!currentUser) { window.location.href = 'login.html'; return; }
 
       const profile = await getProfile(currentUser.id);
       if (!profile) { window.location.href = 'login.html'; return; }
 
-      // Update greeting
       document.getElementById('pending-text').innerHTML =
         `Hi <strong>${profile.first_name}</strong>! Your account is being reviewed by our admin.<br>
          You'll receive an email once it's approved — usually within 24 hours.`;
 
-      // If already approved, redirect immediately
-      if (profile.status === 'approved') {
-        window.location.href = 'map.html';
-        return;
-      }
+      if (profile.status === 'approved') { window.location.href = 'map.html'; return; }
+      if (profile.status === 'rejected') { window.location.href = 'rejected.html'; return; }
 
       // Listen for real-time status changes
-      supabase
-        .channel('profile-status')
+      db.channel('profile-status')
         .on('postgres_changes', {
           event: 'UPDATE',
           schema: 'public',
           table: 'profiles',
           filter: `id=eq.${currentUser.id}`
         }, (payload) => {
-          if (payload.new.status === 'approved') {
-            window.location.href = 'map.html';
-          } else if (payload.new.status === 'rejected') {
-            window.location.href = 'rejected.html';
-          }
+          if (payload.new.status === 'approved') window.location.href = 'map.html';
+          else if (payload.new.status === 'rejected') window.location.href = 'rejected.html';
         })
         .subscribe();
     })();
@@ -104,9 +93,7 @@
       }
     }
 
-    async function handleSignOut() {
-      await signOut();
-    }
+    async function handleSignOut() { await signOut(); }
   </script>
 
 </body>

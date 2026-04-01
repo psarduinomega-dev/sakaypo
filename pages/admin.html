@@ -7,22 +7,19 @@
   <link rel="icon" href="../image/carlogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css"
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 
   <div class="admin-layout">
-    <!-- Sidebar -->
     <aside class="admin-sidebar">
-      <a href="../index.html" class="admin-logo">SakayPo</a>
+      <a href="../index.html" class="admin-logo">SakayPo<span class="dot">.</span></a>
       <a href="admin.html" class="sidebar-link active">👥 Users</a>
-      <a href="admin-rides.html" class="sidebar-link">🚗 Rides</a>
       <a href="map.html" class="sidebar-link">🗺️ Live map</a>
       <div style="flex:1"></div>
       <a href="#" onclick="signOut()" class="sidebar-link" style="margin-top:auto">🚪 Sign out</a>
     </aside>
 
-    <!-- Main content -->
     <main class="admin-main">
       <div class="admin-header">
         <div>
@@ -31,13 +28,11 @@
             Approve or reject new account registrations
           </p>
         </div>
-        <div style="display:flex;gap:1rem;align-items:center">
-          <span id="admin-name" style="font-size:0.875rem;color:rgba(255,255,255,0.5)"></span>
-        </div>
+        <span id="admin-name" style="font-size:0.875rem;color:rgba(255,255,255,0.5)"></span>
       </div>
 
       <!-- Stats -->
-      <div id="stats-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
         <div class="table-wrap" style="padding:1.25rem">
           <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Pending</div>
           <div id="stat-pending" style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#F97316">—</div>
@@ -79,30 +74,12 @@
           </tbody>
         </table>
       </div>
-
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script src="../js/supabase.js"></script>
   <script>
-    // ─────────────────────────────────────────────────────────────
-    // EMAILJS SETUP
-    // ─────────────────────────────────────────────────────────────
-    // Sign up at https://emailjs.com (free tier)
-    // Then update these with your EmailJS public key and service/template IDs
-    
-    const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY_HERE';
-    const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID_HERE';
-    const EMAILJS_APPROVED_TEMPLATE = 'YOUR_APPROVED_TEMPLATE_ID_HERE';
-    const EMAILJS_REJECTED_TEMPLATE = 'YOUR_REJECTED_TEMPLATE_ID_HERE';
-    
-    // Initialize EmailJS (only if keys are set)
-    if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
-      emailjs.init(EMAILJS_PUBLIC_KEY);
-    }
-
     let allUsers = [];
     let currentFilter = 'all';
 
@@ -113,14 +90,13 @@
       await loadUsers();
 
       // Real-time updates
-      supabase
-        .channel('admin-profiles')
+      db.channel('admin-profiles')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, loadUsers)
         .subscribe();
     })();
 
     async function loadUsers() {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -132,9 +108,9 @@
     }
 
     function updateStats() {
-      document.getElementById('stat-pending').textContent = allUsers.filter(u => u.status === 'pending').length;
+      document.getElementById('stat-pending').textContent  = allUsers.filter(u => u.status === 'pending').length;
       document.getElementById('stat-approved').textContent = allUsers.filter(u => u.status === 'approved').length;
-      document.getElementById('stat-total').textContent = allUsers.length;
+      document.getElementById('stat-total').textContent    = allUsers.length;
     }
 
     function setFilter(f) {
@@ -164,15 +140,13 @@
           <td style="font-weight:500;color:white">${u.first_name} ${u.last_name}</td>
           <td>${u.email}</td>
           <td>${u.phone || '—'}</td>
-          <td><span style="text-transform:capitalize">${u.role}</span></td>
-          <td>
-            <span class="badge badge-${u.status}">${u.status}</span>
-          </td>
-          <td style="color:rgba(255,255,255,0.4)">${new Date(u.created_at).toLocaleDateString('en-PH', {month:'short',day:'numeric',year:'numeric'})}</td>
+          <td style="text-transform:capitalize">${u.role}</td>
+          <td><span class="badge badge-${u.status}">${u.status}</span></td>
+          <td style="color:rgba(255,255,255,0.4)">${new Date(u.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
           <td>
             ${u.status === 'pending' ? `
               <button class="action-btn action-approve" onclick="updateStatus('${u.id}','approved')">Approve</button>
-              <button class="action-btn action-reject" onclick="updateStatus('${u.id}','rejected')">Reject</button>
+              <button class="action-btn action-reject"  onclick="updateStatus('${u.id}','rejected')">Reject</button>
             ` : u.status === 'approved' ? `
               <button class="action-btn action-reject" onclick="updateStatus('${u.id}','rejected')">Suspend</button>
             ` : `
@@ -184,40 +158,13 @@
     }
 
     async function updateStatus(userId, newStatus) {
-      const user = allUsers.find(u => u.id === userId);
-      if (!user) return;
-
-      const { error } = await supabase
+      const { error } = await db
         .from('profiles')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', userId);
 
-      if (error) {
-        alert('Error updating status: ' + error.message);
-        return;
-      }
-
-      // Send email notification if EmailJS is configured
-      if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
-        try {
-          const templateId = newStatus === 'approved' ? EMAILJS_APPROVED_TEMPLATE : EMAILJS_REJECTED_TEMPLATE;
-          const statusMessage = newStatus === 'approved' 
-            ? '🎉 Your account has been approved! You can now access the SakayPo carpool platform.'
-            : '❌ Unfortunately, your account was not approved at this time. Please contact us if you think this is a mistake.';
-
-          await emailjs.send(EMAILJS_SERVICE_ID, templateId, {
-            to_email: user.email,
-            to_name: user.first_name,
-            status: newStatus,
-            status_message: statusMessage,
-            app_name: 'SakayPo'
-          });
-          console.log('Email sent to', user.email);
-        } catch (emailError) {
-          console.warn('Email send failed (check EmailJS config):', emailError.message);
-        }
-      }
-      // Table will auto-update via real-time subscription
+      if (error) alert('Error: ' + error.message);
+      // Table auto-updates via realtime subscription
     }
   </script>
 

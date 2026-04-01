@@ -58,6 +58,3 @@ function watchDriverLocation(onUpdate) {
     }, payload => onUpdate(payload.new))
     .subscribe();
 }
-
-// Expose db as window.supabase for compatibility with pages that use `supabase` directly
-window.supabase = db;
