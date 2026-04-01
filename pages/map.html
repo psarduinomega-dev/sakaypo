@@ -219,6 +219,9 @@
     let passengerMarkers = {};
     let routeLayer = null;
     let sheetOpen = false;
+    let driverChannel = null;
+    let requestChannel = null;
+    let refreshTimer = null;
 
     const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const DEFAULT_LAT = 14.676, DEFAULT_LNG = 121.043;
@@ -333,31 +336,44 @@
       await loadMyRequest();
       await updateRoute();
 
-      // Realtime
-      db.channel('driver-loc')
+      // Realtime + fallback polling for reliable auto-refresh
+      driverChannel = db.channel('driver-loc')
         .on('postgres_changes', { event:'*', schema:'public', table:'driver_sessions' }, async () => {
-          await loadDriverSession();
-          updatePeekFromState();
+          await refreshLiveData();
         })
         .subscribe();
 
-      db.channel('ride-requests')
+      requestChannel = db.channel('ride-requests')
         .on('postgres_changes', { event:'*', schema:'public', table:'ride_requests' }, async () => {
-          if (currentProfile.role === 'passenger') {
-            await loadMyRequest();
-            renderPassengerContent();
-          } else {
-            await refreshPassengerMarkers();
-            renderDriverContent();
-          }
+          await refreshLiveData();
         })
         .subscribe();
+
+      refreshTimer = setInterval(refreshLiveData, 5000);
 
       if (currentProfile.role === 'driver') {
         await refreshPassengerMarkers();
-        renderDriverContent();
+        await renderDriverContent();
       } else {
-        renderPassengerContent();
+        await renderPassengerContent();
+      }
+      await updateRoute();
+
+      window.addEventListener('beforeunload', () => {
+        if (refreshTimer) clearInterval(refreshTimer);
+        if (driverChannel) db.removeChannel(driverChannel);
+        if (requestChannel) db.removeChannel(requestChannel);
+      });
+    }
+
+    async function refreshLiveData() {
+      await loadDriverSession();
+      if (currentProfile.role === 'passenger') {
+        await loadMyRequest();
+        await renderPassengerContent();
+      } else {
+        await refreshPassengerMarkers();
+        await renderDriverContent();
       }
       await updateRoute();
     }
@@ -522,7 +538,7 @@
       if (error) { alert('Error: ' + error.message); btn.disabled = false; btn.textContent = 'Request pickup'; return; }
       map.off('click', onMapClick);
       await loadMyRequest();
-      renderPassengerContent();
+      await renderPassengerContent();
     }
 
     async function cancelRequest() {
@@ -531,7 +547,7 @@
       if (myPickupMarker) { map.removeLayer(myPickupMarker); myPickupMarker = null; }
       myRequest = null; pendingPickup = null;
       map.on('click', onMapClick);
-      renderPassengerContent();
+      await renderPassengerContent();
     }
 
     /* ── Driver content ── */
@@ -612,7 +628,7 @@
       if (isOnline) {
         await db.from('driver_sessions').update({ is_online: false }).eq('driver_id', currentUser.id);
         if (locationWatcher) { navigator.geolocation.clearWatch(locationWatcher); locationWatcher = null; }
-        renderDriverContent();
+        await renderDriverContent();
       } else {
         if (!navigator.geolocation) { alert('Geolocation required to go online.'); return; }
         navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -631,7 +647,7 @@
             }).eq('driver_id', currentUser.id);
           }, null, { enableHighAccuracy: true, maximumAge: 3000 });
 
-          renderDriverContent();
+          await renderDriverContent();
         }, () => alert('Could not get your location. Please allow GPS access.'));
       }
     }
@@ -639,7 +655,7 @@
     async function acceptPassenger(requestId) {
       await db.from('ride_requests').update({ status: 'accepted' }).eq('id', requestId);
       await refreshPassengerMarkers();
-      renderDriverContent();
+      await renderDriverContent();
     }
 
     init();

@@ -82,6 +82,8 @@
   <script>
     let allUsers = [];
     let currentFilter = 'all';
+    let adminProfilesChannel = null;
+    let refreshTimer = null;
 
     (async () => {
       const result = await requireAdmin();
@@ -89,10 +91,17 @@
       document.getElementById('admin-name').textContent = result.profile.first_name + ' (Admin)';
       await loadUsers();
 
-      // Real-time updates
-      db.channel('admin-profiles')
+      // Real-time updates + polling fallback
+      adminProfilesChannel = db.channel('admin-profiles')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, loadUsers)
         .subscribe();
+
+      refreshTimer = setInterval(loadUsers, 5000);
+
+      window.addEventListener('beforeunload', () => {
+        if (refreshTimer) clearInterval(refreshTimer);
+        if (adminProfilesChannel) db.removeChannel(adminProfilesChannel);
+      });
     })();
 
     async function loadUsers() {

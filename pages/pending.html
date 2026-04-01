@@ -47,6 +47,8 @@
   <script src="../js/supabase.js"></script>
   <script>
     let currentUser = null;
+    let profileStatusChannel = null;
+    let statusPollTimer = null;
 
     (async () => {
       currentUser = await getCurrentUser();
@@ -62,8 +64,8 @@
       if (profile.status === 'approved') { window.location.href = 'map.html'; return; }
       if (profile.status === 'rejected') { window.location.href = 'rejected.html'; return; }
 
-      // Listen for real-time status changes
-      db.channel('profile-status')
+      // Listen for real-time status changes + fallback polling
+      profileStatusChannel = db.channel('profile-status')
         .on('postgres_changes', {
           event: 'UPDATE',
           schema: 'public',
@@ -74,6 +76,18 @@
           else if (payload.new.status === 'rejected') window.location.href = 'rejected.html';
         })
         .subscribe();
+
+      statusPollTimer = setInterval(async () => {
+        const latest = await getProfile(currentUser.id);
+        if (!latest) return;
+        if (latest.status === 'approved') window.location.href = 'map.html';
+        else if (latest.status === 'rejected') window.location.href = 'rejected.html';
+      }, 5000);
+
+      window.addEventListener('beforeunload', () => {
+        if (statusPollTimer) clearInterval(statusPollTimer);
+        if (profileStatusChannel) db.removeChannel(profileStatusChannel);
+      });
     })();
 
     async function checkStatus() {
