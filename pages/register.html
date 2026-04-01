@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create account — SakayKo</title>
+  <title>Create account — SakayPo</title>
+  <link rel="icon" href="../image/carlogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="auth-page">
 
   <div class="auth-card">
-    <a href="../index.html" class="auth-logo">SakayKo<span class="dot">.</span></a>
+    <a href="../index.html" class="auth-logo">SakayPo</a>
 
     <h1 class="auth-title">Create your account</h1>
     <p class="auth-sub">Join the carpool community. Your account will be reviewed before activation.</p>
@@ -69,6 +69,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
   <script>
     const form = document.getElementById('register-form');
@@ -119,7 +120,7 @@
 
       try {
         // 1. Sign up with Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await db.auth.signUp({
           email,
           password,
           options: {
@@ -138,7 +139,7 @@
         // The DB trigger handles this automatically on auth.users insert
         // But we also do it manually as fallback:
         if (data.user) {
-          await supabase.from('profiles').upsert({
+          await db.from('profiles').upsert({
             id: data.user.id,
             first_name: firstname,
             last_name: lastname,

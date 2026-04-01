@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Map — SakayKo</title>
+  <title>Live Map — SakayPo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { margin: 0; overflow: hidden; }
     #map { width: 100vw; height: 100vh; background: #1a2035; }
@@ -26,9 +25,11 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     .topbar-logo {
+      display: inline-flex; align-items: center; gap: 0.55rem;
       font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
       color: white; text-decoration: none; letter-spacing: -0.02em;
     }
+    .topbar-logo img { width: 30px; height: 30px; border-radius: 6px; object-fit: cover; }
     .topbar-user { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
 
@@ -145,7 +146,7 @@
 
   <!-- Top bar -->
   <div class="topbar">
-    <a href="../index.html" class="topbar-logo">SakayKo<span style="color:#F97316">.</span></a>
+      <a href="../index.html" class="topbar-logo">SakayPo</a>
     <div class="topbar-right">
       <span class="topbar-user" id="user-greeting">Loading...</span>
       <a href="#" onclick="signOut()" style="font-size:0.8rem;color:rgba(255,255,255,0.4);text-decoration:none">Sign out</a>
@@ -163,6 +164,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
   <script>
     let map, driverMarker, passengerMarker, myPickupMarker;
@@ -386,7 +388,7 @@
       btn.textContent = 'Sending...';
 
       const note = document.getElementById('pickup-note')?.value || '';
-      const { error } = await supabase.from('ride_requests').insert({
+      const { error } = await db.from('ride_requests').insert({
         passenger_id: currentUser.id,
         passenger_name: `${currentProfile.first_name} ${currentProfile.last_name}`,
         pickup_lat: pendingPickup.lat,
@@ -409,7 +411,7 @@
 
     async function cancelRequest() {
       if (!myRequest) return;
-      await supabase.from('ride_requests').update({ status: 'cancelled' }).eq('id', myRequest.id);
+      await db.from('ride_requests').update({ status: 'cancelled' }).eq('id', myRequest.id);
       if (myPickupMarker) { map.removeLayer(myPickupMarker); myPickupMarker = undefined; }
       myRequest = null;
       pendingPickup = null;
@@ -481,14 +483,14 @@
       const isOnline = await checkDriverOnline();
       if (isOnline) {
         // Go offline
-        await supabase.from('driver_sessions')
+        await db.from('driver_sessions')
           .update({ is_online: false }).eq('driver_id', currentUser.id);
         if (locationWatcher) { navigator.geolocation.clearWatch(locationWatcher); locationWatcher = null; }
       } else {
         // Go online — start broadcasting location
         if (!navigator.geolocation) { alert('Geolocation required to go online.'); return; }
         navigator.geolocation.getCurrentPosition(async (pos) => {
-          await supabase.from('driver_sessions').upsert({
+          await db.from('driver_sessions').upsert({
             driver_id: currentUser.id,
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
@@ -497,7 +499,7 @@
           }, { onConflict: 'driver_id' });
 
           locationWatcher = navigator.geolocation.watchPosition(async (p) => {
-            await supabase.from('driver_sessions').update({
+            await db.from('driver_sessions').update({
               latitude: p.coords.latitude,
               longitude: p.coords.longitude,
               updated_at: new Date().toISOString()
@@ -509,7 +511,7 @@
     }
 
     async function acceptPassenger(requestId) {
-      await supabase.from('ride_requests')
+      await db.from('ride_requests')
         .update({ status: 'accepted' }).eq('id', requestId);
       renderDriverPanel();
     }

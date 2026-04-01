@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — SakayKo</title>
+  <title>Admin — SakayPo</title>
+  <link rel="icon" href="../image/carlogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="../css/style.css"
 </head>
 <body>
 
   <div class="admin-layout">
     <!-- Sidebar -->
     <aside class="admin-sidebar">
-      <a href="../index.html" class="admin-logo">SakayKo<span class="dot">.</span></a>
+      <a href="../index.html" class="admin-logo">SakayPo</a>
       <a href="admin.html" class="sidebar-link active">👥 Users</a>
       <a href="admin-rides.html" class="sidebar-link">🚗 Rides</a>
       <a href="map.html" class="sidebar-link">🗺️ Live map</a>
@@ -83,8 +83,26 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script src="../js/supabase.js"></script>
   <script>
+    // ─────────────────────────────────────────────────────────────
+    // EMAILJS SETUP
+    // ─────────────────────────────────────────────────────────────
+    // Sign up at https://emailjs.com (free tier)
+    // Then update these with your EmailJS public key and service/template IDs
+    
+    const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY_HERE';
+    const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID_HERE';
+    const EMAILJS_APPROVED_TEMPLATE = 'YOUR_APPROVED_TEMPLATE_ID_HERE';
+    const EMAILJS_REJECTED_TEMPLATE = 'YOUR_REJECTED_TEMPLATE_ID_HERE';
+    
+    // Initialize EmailJS (only if keys are set)
+    if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+
     let allUsers = [];
     let currentFilter = 'all';
 
@@ -166,6 +184,9 @@
     }
 
     async function updateStatus(userId, newStatus) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+
       const { error } = await supabase
         .from('profiles')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
@@ -174,6 +195,27 @@
       if (error) {
         alert('Error updating status: ' + error.message);
         return;
+      }
+
+      // Send email notification if EmailJS is configured
+      if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
+        try {
+          const templateId = newStatus === 'approved' ? EMAILJS_APPROVED_TEMPLATE : EMAILJS_REJECTED_TEMPLATE;
+          const statusMessage = newStatus === 'approved' 
+            ? '🎉 Your account has been approved! You can now access the SakayPo carpool platform.'
+            : '❌ Unfortunately, your account was not approved at this time. Please contact us if you think this is a mistake.';
+
+          await emailjs.send(EMAILJS_SERVICE_ID, templateId, {
+            to_email: user.email,
+            to_name: user.first_name,
+            status: newStatus,
+            status_message: statusMessage,
+            app_name: 'SakayPo'
+          });
+          console.log('Email sent to', user.email);
+        } catch (emailError) {
+          console.warn('Email send failed (check EmailJS config):', emailError.message);
+        }
       }
       // Table will auto-update via real-time subscription
     }
