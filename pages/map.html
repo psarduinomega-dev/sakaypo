@@ -21,23 +21,17 @@
       background: rgba(15,13,11,0.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .topbar-logo {
-      font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800;
-      color: white; text-decoration: none; letter-spacing: -0.02em;
-    }
-    .topbar-right { display: flex; align-items: center; gap: 1rem; }
-    .topbar-user { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .topbar-logo { font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white;text-decoration:none;letter-spacing:-0.02em; }
+    .topbar-right { display:flex;align-items:center;gap:1rem; }
+    .topbar-user { font-size:0.8rem;color:rgba(255,255,255,0.5); }
     .side-panel {
-      position: fixed; top: 60px; right: 1rem; bottom: 1rem; width: 300px; z-index: 900;
-      background: rgba(28,25,22,0.95); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; padding: 1.25rem; backdrop-filter: blur(12px);
-      display: flex; flex-direction: column; gap: 1rem; overflow-y: auto;
+      position:fixed;top:60px;right:1rem;bottom:1rem;width:300px;z-index:900;
+      background:rgba(28,25,22,0.95);border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px;padding:1.25rem;backdrop-filter:blur(12px);
+      display:flex;flex-direction:column;gap:1rem;overflow-y:auto;
     }
-    .panel-title { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: white; }
-    .driver-status {
-      display: flex; align-items: center; gap: 10px; padding: 0.85rem 1rem;
-      background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);
-    }
+    .panel-title { font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:white; }
+    .driver-status { display:flex;align-items:center;gap:10px;padding:0.85rem 1rem;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06); }
     .online-dot  { width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,0.2);flex-shrink:0; }
     .offline-dot { width:10px;height:10px;border-radius:50%;background:#6B6560;flex-shrink:0; }
     .driver-info .driver-name   { font-size:0.875rem;font-weight:500;color:white; }
@@ -46,42 +40,24 @@
     .request-card h4 { font-size:0.85rem;font-weight:600;color:#F97316;margin-bottom:4px; }
     .request-card p  { font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.5; }
     .pickup-form { display:flex;flex-direction:column;gap:0.6rem; }
-    .pickup-input {
-      width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
-      border-radius:8px;padding:0.65rem 0.85rem;font-family:'DM Sans',sans-serif;
-      font-size:0.85rem;color:white;outline:none;
-    }
+    .pickup-input { width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.65rem 0.85rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:white;outline:none; }
     .pickup-input::placeholder { color:rgba(255,255,255,0.25); }
     .pickup-input:focus { border-color:#F97316; }
-    .btn-pickup {
-      width:100%;background:#F97316;color:white;border:none;border-radius:50px;padding:0.7rem;
-      font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s;
-    }
+    .btn-pickup { width:100%;background:#F97316;color:white;border:none;border-radius:50px;padding:0.7rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:background 0.2s; }
     .btn-pickup:hover { background:#EA6B0E; }
     .btn-pickup:disabled { opacity:0.5;cursor:not-allowed; }
-    .btn-location {
-      width:100%;background:transparent;color:rgba(255,255,255,0.6);
-      border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:0.6rem;
-      font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;
-    }
+    .btn-location { width:100%;background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:0.6rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s; }
     .btn-location:hover { border-color:rgba(255,255,255,0.3);color:white; }
     .waiting-list { display:flex;flex-direction:column;gap:0.5rem; }
-    .waiting-item {
-      display:flex;align-items:center;gap:8px;padding:0.6rem 0.85rem;
-      background:rgba(255,255,255,0.04);border-radius:8px;font-size:0.8rem;
-    }
-    .waiting-item .item-name { flex:1;font-weight:500;color:white; }
+    .waiting-item { display:flex;align-items:center;gap:8px;padding:0.75rem 0.85rem;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06); }
+    .waiting-item .item-name { flex:1;font-weight:500;color:white;font-size:0.85rem; }
+    .waiting-item .item-note { font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:2px; }
+    .item-info { flex:1; }
     .toggle-row { display:flex;align-items:center;justify-content:space-between; }
     .toggle-label { font-size:0.85rem;color:rgba(255,255,255,0.7); }
-    .toggle-switch {
-      width:44px;height:24px;background:rgba(255,255,255,0.15);border-radius:12px;
-      position:relative;cursor:pointer;transition:background 0.2s;
-    }
+    .toggle-switch { width:44px;height:24px;background:rgba(255,255,255,0.15);border-radius:12px;position:relative;cursor:pointer;transition:background 0.2s; }
     .toggle-switch.on { background:#22C55E; }
-    .toggle-switch::after {
-      content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;
-      border-radius:50%;background:white;transition:transform 0.2s;
-    }
+    .toggle-switch::after { content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:white;transition:transform 0.2s; }
     .toggle-switch.on::after { transform:translateX(20px); }
     .section-label { font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3); }
     .status-tag { display:inline-block;font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:50px; }
@@ -89,6 +65,23 @@
     .tag-accepted { background:rgba(34,197,94,0.12);color:#4ADE80; }
     .btn-cancel { font-size:0.75rem;color:rgba(255,69,69,0.7);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif; }
     .btn-cancel:hover { color:#F87171; }
+    .btn-locate {
+      font-size:0.75rem;background:rgba(59,130,246,0.15);color:#93C5FD;
+      border:1px solid rgba(59,130,246,0.25);border-radius:6px;padding:3px 10px;
+      cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;
+    }
+    .btn-locate:hover { background:rgba(59,130,246,0.25); }
+    .passenger-label {
+      background: rgba(28,25,22,0.95);
+      border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: white;
+      white-space: nowrap;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -117,15 +110,26 @@
     let myRequest = null;
     let locationWatcher = null;
     let pendingPickup = null;
+    // Stores all passenger markers keyed by ride_request id
+    let passengerMarkers = {};
 
     const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     const DEFAULT_LAT = 14.676, DEFAULT_LNG = 121.043;
 
+    // ── Icons ──
     const driverIcon = L.divIcon({
       html: `<div style="background:#F97316;width:40px;height:40px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,0.4)"></div>`,
       iconSize:[40,40], iconAnchor:[20,40], className:''
     });
-    const pickupIcon = L.divIcon({
+    const waitingIcon = L.divIcon({
+      html: `<div style="background:#3B82F6;width:34px;height:34px;border-radius:50%;border:3px solid white;box-shadow:0 2px 10px rgba(59,130,246,0.5);display:flex;align-items:center;justify-content:center;font-size:16px">🧍</div>`,
+      iconSize:[34,34], iconAnchor:[17,17], className:''
+    });
+    const acceptedIcon = L.divIcon({
+      html: `<div style="background:#22C55E;width:34px;height:34px;border-radius:50%;border:3px solid white;box-shadow:0 2px 10px rgba(34,197,94,0.5);display:flex;align-items:center;justify-content:center;font-size:16px">✅</div>`,
+      iconSize:[34,34], iconAnchor:[17,17], className:''
+    });
+    const myPinIcon = L.divIcon({
       html: `<div style="background:#3B82F6;width:28px;height:28px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>`,
       iconSize:[28,28], iconAnchor:[14,14], className:''
     });
@@ -146,27 +150,35 @@
       await loadDriverSession();
       await loadMyRequest();
 
-      // Realtime: driver location
+      // Realtime: driver location changes
       db.channel('driver-loc')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'driver_sessions' }, async () => {
           await loadDriverSession();
-          if (currentProfile.role === 'driver') renderDriverPanel();
         })
         .subscribe();
 
-      // Realtime: ride requests
+      // Realtime: ride request changes
       db.channel('ride-requests')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'ride_requests' }, async () => {
-          await loadMyRequest();
-          if (currentProfile.role === 'passenger') renderPassengerPanel();
-          else renderDriverPanel();
+          if (currentProfile.role === 'passenger') {
+            await loadMyRequest();
+            renderPassengerPanel();
+          } else {
+            await refreshPassengerMarkers();
+            renderDriverPanel();
+          }
         })
         .subscribe();
 
-      if (currentProfile.role === 'driver') renderDriverPanel();
-      else renderPassengerPanel();
+      if (currentProfile.role === 'driver') {
+        await refreshPassengerMarkers(); // show existing passengers on load
+        renderDriverPanel();
+      } else {
+        renderPassengerPanel();
+      }
     }
 
+    // ── Load driver GPS ──
     async function loadDriverSession() {
       const { data } = await db.from('driver_sessions').select('*').eq('is_online', true).limit(1);
       if (data && data.length > 0) {
@@ -175,7 +187,7 @@
         if (s.latitude && s.longitude) {
           if (driverMarker) driverMarker.setLatLng([s.latitude, s.longitude]);
           else driverMarker = L.marker([s.latitude, s.longitude], { icon: driverIcon })
-            .addTo(map).bindPopup('<b>Your driver</b><br>Online now');
+            .addTo(map).bindPopup('<b>🚗 Your driver</b><br>Online and tracking');
         }
       } else {
         driverOnline = false;
@@ -183,6 +195,7 @@
       }
     }
 
+    // ── Load my own request (passenger) ──
     async function loadMyRequest() {
       if (currentProfile.role !== 'passenger') return;
       const { data } = await db.from('ride_requests').select('*')
@@ -190,9 +203,50 @@
       myRequest = data && data.length ? data[0] : null;
     }
 
+    // ── Refresh all passenger markers on the map (driver view) ──
+    async function refreshPassengerMarkers() {
+      const { data: requests } = await db.from('ride_requests').select('*')
+        .in('status', ['waiting', 'accepted'])
+        .order('created_at', { ascending: true });
+
+      const activeIds = new Set((requests || []).map(r => r.id));
+
+      // Remove markers for cancelled/completed requests
+      for (const id in passengerMarkers) {
+        if (!activeIds.has(id)) {
+          map.removeLayer(passengerMarkers[id]);
+          delete passengerMarkers[id];
+        }
+      }
+
+      // Add or update markers for active requests
+      (requests || []).forEach(r => {
+        if (!r.pickup_lat || !r.pickup_lng) return;
+        const icon = r.status === 'accepted' ? acceptedIcon : waitingIcon;
+        const popupHtml = `
+          <div style="font-family:'DM Sans',sans-serif;min-width:160px">
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px">🧍 ${r.passenger_name}</div>
+            ${r.note ? `<div style="font-size:12px;color:#888;margin-bottom:4px">📝 ${r.note}</div>` : ''}
+            <div style="font-size:11px;color:${r.status==='accepted'?'#22C55E':'#F97316'};font-weight:600;text-transform:uppercase">${r.status}</div>
+          </div>`;
+
+        if (passengerMarkers[r.id]) {
+          // Update existing marker icon and position
+          passengerMarkers[r.id].setIcon(icon);
+          passengerMarkers[r.id].setLatLng([r.pickup_lat, r.pickup_lng]);
+        } else {
+          // Create new marker
+          passengerMarkers[r.id] = L.marker([r.pickup_lat, r.pickup_lng], { icon })
+            .addTo(map)
+            .bindPopup(popupHtml);
+        }
+      });
+    }
+
     /* ── Passenger Panel ── */
     function renderPassengerPanel() {
       const content = document.getElementById('panel-content');
+
       if (myRequest) {
         const accepted = myRequest.status === 'accepted';
         content.innerHTML = `
@@ -207,16 +261,23 @@
           <div class="section-label">Your ride request</div>
           <div class="request-card">
             <h4>Status: <span class="status-tag ${accepted ? 'tag-accepted' : 'tag-waiting'}">${myRequest.status}</span></h4>
-            <p>${accepted ? '🎉 Driver accepted! On the way.' : '⏳ Waiting for driver to accept...'}</p>
+            <p>${accepted ? '🎉 Driver accepted! On the way.' : '⏳ Waiting for driver to accept your request...'}</p>
           </div>
           <button class="btn-cancel" onclick="cancelRequest()">✕ Cancel my request</button>`;
 
-        if (myRequest.pickup_lat && !myPickupMarker) {
-          myPickupMarker = L.marker([myRequest.pickup_lat, myRequest.pickup_lng], { icon: pickupIcon })
-            .addTo(map).bindPopup('📍 Your pickup location');
+        // Show my pickup pin
+        if (myRequest.pickup_lat) {
+          if (!myPickupMarker) {
+            myPickupMarker = L.marker([myRequest.pickup_lat, myRequest.pickup_lng], { icon: myPinIcon })
+              .addTo(map).bindPopup('📍 Your pickup location').openPopup();
+          }
+          map.setView([myRequest.pickup_lat, myRequest.pickup_lng], 16);
         }
         return;
       }
+
+      // Clear old pin if request was cancelled
+      if (myPickupMarker) { map.removeLayer(myPickupMarker); myPickupMarker = null; }
 
       content.innerHTML = `
         <div class="section-label">Driver status</div>
@@ -230,8 +291,8 @@
         <div class="section-label">Request a pickup</div>
         <div class="pickup-form">
           <button class="btn-location" onclick="useMyLocation()">📍 Use my current location</button>
-          <div style="text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.3)">— or click the map to pin your spot —</div>
-          <input type="text" class="pickup-input" id="pickup-note" placeholder="Add a note (optional)" maxlength="80">
+          <div style="text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.3)">— or tap the map to drop your pin —</div>
+          <input type="text" class="pickup-input" id="pickup-note" placeholder="Add a note e.g. 'near sari-sari store'" maxlength="80">
           <button class="btn-pickup" id="request-btn" onclick="submitRequest()">Request pickup</button>
         </div>`;
 
@@ -246,14 +307,17 @@
     function placePickupPin(lat, lng) {
       pendingPickup = { lat, lng };
       if (myPickupMarker) map.removeLayer(myPickupMarker);
-      myPickupMarker = L.marker([lat, lng], { icon: pickupIcon })
+      myPickupMarker = L.marker([lat, lng], { icon: myPinIcon })
         .addTo(map).bindPopup('📍 Your pickup location').openPopup();
     }
 
     function useMyLocation() {
       if (!navigator.geolocation) { alert('Geolocation not supported.'); return; }
       navigator.geolocation.getCurrentPosition(
-        (pos) => { placePickupPin(pos.coords.latitude, pos.coords.longitude); map.setView([pos.coords.latitude, pos.coords.longitude], 16); },
+        (pos) => {
+          placePickupPin(pos.coords.latitude, pos.coords.longitude);
+          map.setView([pos.coords.latitude, pos.coords.longitude], 17);
+        },
         () => alert('Unable to get your location. Please allow location access.')
       );
     }
@@ -287,13 +351,15 @@
     /* ── Driver Panel ── */
     async function renderDriverPanel() {
       const content = document.getElementById('panel-content');
+
       const { data: onlineData } = await db.from('driver_sessions').select('*')
         .eq('driver_id', currentUser.id).eq('is_online', true).limit(1);
       const isOnline = onlineData && onlineData.length > 0;
 
       const { data: requests } = await db.from('ride_requests').select('*')
         .in('status', ['waiting','accepted']).order('created_at', { ascending: true });
-      const waiting = requests?.filter(r => r.status === 'waiting') || [];
+      const waiting  = (requests || []).filter(r => r.status === 'waiting');
+      const accepted = (requests || []).filter(r => r.status === 'accepted');
 
       content.innerHTML = `
         <div class="toggle-row">
@@ -307,15 +373,48 @@
             <div class="driver-detail">${isOnline ? 'Broadcasting live location' : 'Tap toggle to go online'}</div>
           </div>
         </div>
-        <div class="section-label">Waiting passengers (${waiting.length})</div>
-        ${waiting.length === 0 ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.3)">No one waiting yet.</div>` : ''}
+
+        ${accepted.length > 0 ? `
+          <div class="section-label">✅ Accepted (${accepted.length})</div>
+          <div class="waiting-list">
+            ${accepted.map(r => `
+              <div class="waiting-item">
+                <div class="item-info">
+                  <div class="item-name">${r.passenger_name}</div>
+                  ${r.note ? `<div class="item-note">📝 ${r.note}</div>` : ''}
+                </div>
+                <button class="btn-locate" onclick="flyToPassenger(${r.pickup_lat}, ${r.pickup_lng})">📍 Locate</button>
+              </div>`).join('')}
+          </div>` : ''}
+
+        <div class="section-label">⏳ Waiting passengers (${waiting.length})</div>
+        ${waiting.length === 0 ? `<div style="font-size:0.8rem;color:rgba(255,255,255,0.3);padding:0.5rem 0">No one waiting yet.</div>` : ''}
         <div class="waiting-list">
           ${waiting.map(r => `
             <div class="waiting-item">
-              <div class="item-name">${r.passenger_name}</div>
-              <button class="action-btn action-approve" onclick="acceptPassenger('${r.id}')">Accept</button>
+              <div class="item-info">
+                <div class="item-name">${r.passenger_name}</div>
+                ${r.note ? `<div class="item-note">📝 ${r.note}</div>` : ''}
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+                <button class="btn-locate" onclick="flyToPassenger(${r.pickup_lat}, ${r.pickup_lng})">📍 Locate</button>
+                <button class="action-btn action-approve" onclick="acceptPassenger('${r.id}')">Accept</button>
+              </div>
             </div>`).join('')}
         </div>`;
+    }
+
+    // Fly the map to a passenger's pin
+    function flyToPassenger(lat, lng) {
+      map.flyTo([lat, lng], 17, { animate: true, duration: 1 });
+      // Open popup if marker exists
+      for (const id in passengerMarkers) {
+        const m = passengerMarkers[id];
+        const pos = m.getLatLng();
+        if (Math.abs(pos.lat - lat) < 0.0001 && Math.abs(pos.lng - lng) < 0.0001) {
+          m.openPopup();
+        }
+      }
     }
 
     async function toggleDriverOnline() {
@@ -326,29 +425,37 @@
       if (isOnline) {
         await db.from('driver_sessions').update({ is_online: false }).eq('driver_id', currentUser.id);
         if (locationWatcher) { navigator.geolocation.clearWatch(locationWatcher); locationWatcher = null; }
+        renderDriverPanel();
       } else {
         if (!navigator.geolocation) { alert('Geolocation required to go online.'); return; }
         navigator.geolocation.getCurrentPosition(async (pos) => {
           await db.from('driver_sessions').upsert({
-            driver_id: currentUser.id, latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude, is_online: true,
+            driver_id: currentUser.id,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            is_online: true,
             updated_at: new Date().toISOString()
           }, { onConflict: 'driver_id' });
+
+          // Pan map to driver's location
+          map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+
           locationWatcher = navigator.geolocation.watchPosition(async (p) => {
             await db.from('driver_sessions').update({
-              latitude: p.coords.latitude, longitude: p.coords.longitude,
+              latitude: p.coords.latitude,
+              longitude: p.coords.longitude,
               updated_at: new Date().toISOString()
             }).eq('driver_id', currentUser.id);
           }, null, { enableHighAccuracy: true, maximumAge: 3000 });
+
           renderDriverPanel();
-        });
-        return;
+        }, () => alert('Could not get your location. Please allow GPS access.'));
       }
-      renderDriverPanel();
     }
 
     async function acceptPassenger(requestId) {
       await db.from('ride_requests').update({ status: 'accepted' }).eq('id', requestId);
+      await refreshPassengerMarkers();
       renderDriverPanel();
     }
 
