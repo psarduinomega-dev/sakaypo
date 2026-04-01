@@ -60,6 +60,7 @@
     .peek-status { display:flex;align-items:center;gap:8px; }
     .peek-label { font-size:0.9rem;font-weight:500;color:white; }
     .peek-sub { font-size:0.75rem;color:rgba(255,255,255,0.45); }
+    .peek-route { font-size:0.7rem;color:rgba(132,204,255,0.9); margin-top: 2px; }
     .peek-toggle {
       font-size:0.75rem;color:rgba(255,255,255,0.5);
       background:rgba(255,255,255,0.08);border:none;
@@ -195,6 +196,7 @@
         <div>
           <div class="peek-label" id="peek-label">Loading...</div>
           <div class="peek-sub" id="peek-sub"></div>
+          <div class="peek-route" id="peek-route"></div>
         </div>
       </div>
       <button class="peek-toggle" id="peek-btn">▲ Open</button>
@@ -209,11 +211,13 @@
   <script>
     let map, driverMarker, myPickupMarker;
     let currentUser, currentProfile;
+    let currentDriverLocation = null;
     let driverOnline = false;
     let myRequest = null;
     let locationWatcher = null;
     let pendingPickup = null;
     let passengerMarkers = {};
+    let routeLayer = null;
     let sheetOpen = false;
 
     const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -258,6 +262,60 @@
       dot.className = dotClass;
     }
 
+    function clearRoute() {
+      if (routeLayer) {
+        map.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+    }
+
+    async function drawRoute(from, to) {
+      if (!from || !to) { clearRoute(); return; }
+      const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.code !== 'Ok' || !data.routes?.length) {
+          clearRoute();
+          return;
+        }
+        const r = data.routes[0];
+        const coords = r.geometry.coordinates.map(pt => [pt[1], pt[0]]);
+        if (routeLayer) map.removeLayer(routeLayer);
+        routeLayer = L.polyline(coords, { color: '#22C55E', weight: 4, opacity: 0.85 }).addTo(map);
+        const km = (r.distance / 1000).toFixed(2);
+        const min = Math.round(r.duration / 60);
+        return `Route ${km} km · ETA ${min} min`;
+      } catch (e) {
+        console.warn('Route fetch failed', e);
+        clearRoute();
+        return;
+      }
+    }
+
+    async function updateRoute() {
+      document.getElementById('peek-route').textContent = '';
+      if (!currentDriverLocation) { clearRoute(); return; }
+
+      if (currentProfile.role === 'passenger' && myRequest && myRequest.pickup_lat && myRequest.pickup_lng && ['waiting', 'accepted'].includes(myRequest.status)) {
+        const summary = await drawRoute(currentDriverLocation, {lat: myRequest.pickup_lat, lng: myRequest.pickup_lng});
+        if (summary) document.getElementById('peek-route').textContent = summary;
+        return;
+      }
+
+      if (currentProfile.role === 'driver') {
+        const { data: requests } = await db.from('ride_requests').select('*').in('status', ['accepted', 'waiting']).order('created_at', { ascending: true });
+        const target = (requests || []).find(r => r.status === 'accepted') || (requests || [])[0];
+        if (target && target.pickup_lat && target.pickup_lng) {
+          const summary = await drawRoute(currentDriverLocation, {lat: target.pickup_lat, lng: target.pickup_lng});
+          if (summary) document.getElementById('peek-route').textContent = summary;
+          return;
+        }
+      }
+
+      clearRoute();
+    }
+
     async function init() {
       const result = await requireApproved();
       if (!result) return;
@@ -273,6 +331,7 @@
 
       await loadDriverSession();
       await loadMyRequest();
+      await updateRoute();
 
       // Realtime
       db.channel('driver-loc')
@@ -300,6 +359,7 @@
       } else {
         renderPassengerContent();
       }
+      await updateRoute();
     }
 
     function updatePeekFromState() {
@@ -320,6 +380,7 @@
       if (data && data.length > 0) {
         driverOnline = true;
         const s = data[0];
+        currentDriverLocation = { lat: s.latitude, lng: s.longitude };
         if (s.latitude && s.longitude) {
           if (driverMarker) driverMarker.setLatLng([s.latitude, s.longitude]);
           else driverMarker = L.marker([s.latitude, s.longitude], { icon: driverIcon })
@@ -327,9 +388,11 @@
         }
       } else {
         driverOnline = false;
+        currentDriverLocation = null;
         if (driverMarker) { map.removeLayer(driverMarker); driverMarker = null; }
       }
       updatePeekFromState();
+      await updateRoute();
     }
 
     async function loadMyRequest() {
@@ -370,7 +433,7 @@
     }
 
     /* ── Passenger content ── */
-    function renderPassengerContent() {
+    async function renderPassengerContent() {
       const content = document.getElementById('panel-content');
       updatePeekFromState();
 
@@ -397,6 +460,7 @@
           map.setView([myRequest.pickup_lat, myRequest.pickup_lng], 16);
         }
         openSheet();
+        await updateRoute();
         return;
       }
 
